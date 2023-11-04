@@ -8,9 +8,10 @@ defmodule FizzBuzz.FizzBuzzTest do
       FizzBuzzGenerator.get_homepage_values()
       |> case do
         {:ok, values} ->
-          IO.inspect(values)
           true
-        _ -> false
+
+        _ ->
+          false
       end
 
     assert result
@@ -18,20 +19,33 @@ defmodule FizzBuzz.FizzBuzzTest do
 
   # Will test different inputs within the expected range
   test "generate range of values" do
-    input_values = [{101, 200}, {201, 300}, {1001, 2000}]
+    input_values = [{101, 200}, {201, 300}, {1001, 2000}, {99_999_999_900, 100_000_000_000}, {99_999_900_000, 100_000_000_000}]
 
     Enum.each(input_values, fn {start_value, end_value} ->
       result =
         FizzBuzzGenerator.get_between_values(start_value, end_value)
         |> case do
           {:ok, values} ->
-            IO.inspect(values)
             true
-          _ -> false
+
+          _ ->
+            false
         end
 
       assert result
     end)
+  end
+
+  test "enter invalid range of values" do
+    result =
+    FizzBuzzGenerator.get_between_values(500, 400)
+    |> case do
+      {:error, message} ->
+        IO.inspect(message)
+        true
+      _ -> false
+    end
+    assert result
   end
 
   test "set number as favourite" do

@@ -4,6 +4,10 @@ defmodule FizzBuzz.FizzBuzzGenerator do
     {:ok, result}
   end
 
+  def get_between_values(start_value, end_value) when start_value > end_value do
+    {:error, "Start value greater than end value"}
+  end
+
   def get_between_values(start_value, end_value) do
     result = fizz_buzz(start_value, end_value)
     {:ok, result}
