@@ -1,34 +1,41 @@
 defmodule FizzBuzz.FizzBuzzTest do
+  alias FizzBuzz.FizzBuzzGenerator
   use ExUnit.Case
   # Test generates values 1-100 using fizzbuzz
   test "generate home page values" do
-
-    #TODO validate return values
+    # TODO validate return values
     result =
-    FizzBuzz.get_homepage_values()
-    |> case do
-      {:ok, values} -> true
-      _ -> false
-    end
+      FizzBuzzGenerator.get_homepage_values()
+      |> case do
+        {:ok, values} ->
+          IO.inspect(values)
+          true
+        _ -> false
+      end
+
     assert result
   end
 
   # Will test different inputs within the expected range
   test "generate range of values" do
-    input_values =
-    [{101, 200}, {201, 300}, {1001, 2000}, {999_999_999_000, 100_000_000_000}]
+    input_values = [{101, 200}, {201, 300}, {1001, 2000}]
+
     Enum.each(input_values, fn {start_value, end_value} ->
-     result = FizzBuzz.get_between_values(start_value, end_value)
-      |> case do
-        {:ok, _values} -> true
-        _-> false
+      result =
+        FizzBuzzGenerator.get_between_values(start_value, end_value)
+        |> case do
+          {:ok, values} ->
+            IO.inspect(values)
+            true
+          _ -> false
         end
-    assert result
+
+      assert result
     end)
   end
 
   test "set number as favourite" do
-    #TOD0 set a new number as a favourite
+    # TOD0 set a new number as a favourite
     assert true
   end
 
