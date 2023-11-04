@@ -1,5 +1,6 @@
 defmodule ElixirFizzBuzzWeb.Router do
   use ElixirFizzBuzzWeb, :router
+  import Phoenix.LiveView.Router
 
   pipeline :browser do
     plug :accepts, ["html"]
@@ -16,9 +17,7 @@ defmodule ElixirFizzBuzzWeb.Router do
 
   scope "/", ElixirFizzBuzzWeb do
     pipe_through :browser
-
-    get "/", PageController, :home
-    live "/fizz", FizzBuzzLive
+    live "/", FizzBuzzLive
   end
 
   # Other scopes may use custom stacks.

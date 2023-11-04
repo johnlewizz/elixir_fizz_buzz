@@ -3,7 +3,7 @@ import Config
 # Configure your database
 config :elixir_fizz_buzz, ElixirFizzBuzz.Repo,
   username: "postgres",
-  password: "stalingrad1942",
+  password: "postgres",
   hostname: "localhost",
   database: "elixir_fizz_buzz_dev",
   stacktrace: true,
