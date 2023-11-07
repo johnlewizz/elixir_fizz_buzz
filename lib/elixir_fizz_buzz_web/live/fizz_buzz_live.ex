@@ -4,7 +4,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
 
   def mount(_params, _session, socket) do
     {:ok, fizzbuzz_list} = FizzBuzzGenerator.get_homepage_values()
-    #TODO set pagesize according to container size
+    # TODO set pagesize according to container size
     page_size = 20
     socket = assign(socket, fizzbuzz_list: fizzbuzz_list, page: 1, page_size: page_size)
 
@@ -47,28 +47,26 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
   end
 
   def handle_event("next_page", _params, socket) do
-    IO.inspect("Next Page")
     page = min(socket.assigns.page + 1, total_pages(socket))
     {:noreply, assign(socket, page: page)}
   end
 
-  defp total_pages(socket) do
-    list_count = Enum.count(socket.assigns.fizzbuzz_list)
-      pages = div(list_count, socket.assigns.page_size)
-
-    page_remainder =
-      rem(list_count, socket.assigns.page_size)
-
-      unless page_remainder == 0 do
-        pages + 1
-      else
-        pages
-      end
-  end
-
-  defp favourite("favourite", _params, socket) do
+  def handle_event("favourite", _params, socket) do
     # TODO add number to favourite
     IO.inspect("Favourite")
     {:noreply, socket}
+  end
+
+  defp total_pages(socket) do
+    list_count = Enum.count(socket.assigns.fizzbuzz_list)
+    pages = div(list_count, socket.assigns.page_size)
+
+    page_remainder = rem(list_count, socket.assigns.page_size)
+
+    unless page_remainder == 0 do
+      pages + 1
+    else
+      pages
+    end
   end
 end

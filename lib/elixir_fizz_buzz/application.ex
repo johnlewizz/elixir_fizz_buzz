@@ -1,35 +1,21 @@
 defmodule ElixirFizzBuzz.Application do
-  # See https://hexdocs.pm/elixir/Application.html
-  # for more information on OTP Applications
-  @moduledoc false
-
   use Application
 
   @impl true
   def start(_type, _args) do
     children = [
-      # Start the Telemetry supervisor
       ElixirFizzBuzzWeb.Telemetry,
-      # Start the Ecto repository
       ElixirFizzBuzz.Repo,
-      # Start the PubSub system
       {Phoenix.PubSub, name: ElixirFizzBuzz.PubSub},
-      # Start Finch
       {Finch, name: ElixirFizzBuzz.Finch},
-      # Start the Endpoint (http/https)
-      ElixirFizzBuzzWeb.Endpoint
-      # Start a worker by calling: ElixirFizzBuzz.Worker.start_link(arg)
-      # {ElixirFizzBuzz.Worker, arg}
-    ]
+      ElixirFizzBuzzWeb.Endpoint,
+      FizzBuzz.FavouritesCache
 
-    # See https://hexdocs.pm/elixir/Supervisor.html
-    # for other strategies and supported options
+    ]
     opts = [strategy: :one_for_one, name: ElixirFizzBuzz.Supervisor]
     Supervisor.start_link(children, opts)
   end
 
-  # Tell Phoenix to update the endpoint configuration
-  # whenever the application is updated.
   @impl true
   def config_change(changed, _new, removed) do
     ElixirFizzBuzzWeb.Endpoint.config_change(changed, removed)

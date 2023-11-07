@@ -25,6 +25,10 @@ erl_crash.dump
 # Ignore package tarball (built via "mix hex.build").
 elixir_fizz_buzz-*.tar
 
+#Ignore local :dets files
+/favourites
+/favourites_test
+
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
 
