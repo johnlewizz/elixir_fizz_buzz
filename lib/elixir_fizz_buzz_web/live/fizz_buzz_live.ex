@@ -139,12 +139,12 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
 
   defp add_styling(socket) do
     form_style =
-      "display: inline; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 4px;"
+      "display: flex; align-items: center; justify-content: space-between; margin: 0 auto; padding: 10px; border: 1px solid #ccc; border-radius: 4px;"
 
     label_style = "display: inline; margin-right: 10px; margin-bottom: 10px;"
 
     input_style =
-      "display: inline-block; width: 150px; padding: 10px; margin-right: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;"
+      "flex: 1; display: inline-block; width: 100%; padding: 10px; margin-right: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;"
 
     container_style = "width: 100%; margin: 0 auto;"
     table_style = "width: 100%; border-collapse: collapse;"
@@ -153,7 +153,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     td_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
 
     button_style =
-      "background-color: #00008B; color: white; padding: 10px; width: 100px; border: none; border-radius: 4px; cursor: pointer;"
+      "background-color: #00008B; color: white; padding: 10px; min-width: 100px; border: none; border-radius: 4px; cursor: pointer;"
 
     margin_right = "margin-right: 5px;"
     margin_left = "margin-left: 5px;"
