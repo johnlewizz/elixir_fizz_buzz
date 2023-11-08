@@ -7,36 +7,56 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     {:ok, fizzbuzz_list} = FizzBuzzGenerator.get_homepage_values()
     # TODO set pagesize according to container size
     page_size = 20
-    socket = assign(socket, fizzbuzz_list: fizzbuzz_list, page: 1, page_size: page_size)
+
+    socket =
+      assign(socket, fizzbuzz_list: fizzbuzz_list, page: 1, page_size: page_size)
+      |> add_styling()
 
     {:ok, socket}
   end
 
   def render(assigns) do
+    container_style = "width: 100%; margin: 0 auto;"
+    table_style = "width: 100%; border-collapse: collapse;"
+    thead_style = "background-color: #f2f2f2;"
+    th_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
+    td_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
+
+    button_style =
+      "background-color: #00008B; color: white; padding: 10px; width: 100px; border: none; border-radius: 4px; cursor: pointer;"
+
+    margin_right = "margin-right: 5px;"
+    margin_left = "margin-left: 5px;"
+
     ~H"""
-    <div class="container">
-      <table class="table table-responsive">
-        <thead>
+    <div class="container" style={container_style}>
+      <table class="table table-responsive" style={table_style}>
+        <thead style={thead_style}>
           <tr>
-            <th>Number</th>
-            <th class="d-none d-md-table-cell">Result</th>
-            <th class="d-none d-md-table-cell">Favourite</th>
+            <th style={th_style}>Number</th>
+            <th class="d-none d-md-table-cell" style={th_style}>Result</th>
+            <th class="d-none d-md-table-cell" style={th_style}>Favourite</th>
           </tr>
         </thead>
         <tbody>
           <%= for item <- Enum.slice(assigns.fizzbuzz_list, (assigns.page - 1) * assigns.page_size, assigns.page_size) do %>
             <tr>
-              <td><%= item.id %></td>
-              <td><%= item.value %></td>
+              <td style={td_style}><%= item.id %></td>
+              <td style={td_style}><%= item.value %></td>
               <%= if item.favourited do %>
-                <td>
-                  <button phx-click="unfavourite" phx-value-key={item.id}>
+                <td style={td_style}>
+                  <button phx-click="unfavourite" phx-value-key={item.id} style={button_style}>
                     ❤
                   </button>
                 </td>
               <% else %>
-                <td>
-                  <button phx-click="favourite" phx-value-key={item.id} phx-value-result={item.value}>
+                <td style={td_style}>
+                  <button
+                    phx-click="favourite"
+                    phx-value-key={item.id}
+                    phx-value-result={item.value}
+                    style={button_style}
+                  >
                     ♥
                   </button>
                 </td>
@@ -46,9 +66,9 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
         </tbody>
       </table>
       <div>
-        <button phx-click="prev_page">Previous</button>
+        <button phx-click="prev_page" style={button_style <> margin_right}>Previous</button>
         <span>Page <%= assigns.page %></span>
-        <button phx-click="next_page">Next</button>
+        <button phx-click="next_page" style={button_style <> margin_left}>Next</button>
       </div>
     </div>
     """
@@ -66,19 +86,12 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
 
   def handle_event("favourite", %{"key" => key, "result" => value}, socket) do
     int_key = String.to_integer(key)
-    # TODO add number to favourite
     FavouritesCache.add_favourite(int_key, value)
-    |> IO.inspect()
-
-    IO.inspect("Favourite")
     {:noreply, socket}
   end
 
   def handle_event("unfavourite", %{"key" => key}, socket) do
     FavouritesCache.delete_favourite(String.to_integer(key))
-    |> IO.inspect()
-
-    IO.inspect("unfavourite")
     {:noreply, socket}
   end
 
@@ -93,5 +106,29 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     else
       pages
     end
+  end
+
+  defp add_styling(socket) do
+    container_style = "width: 100%; margin: 0 auto;"
+    table_style = "width: 100%; border-collapse: collapse;"
+    thead_style = "background-color: #f2f2f2;"
+    th_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
+    td_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
+
+    button_style =
+      "background-color: #00008B; color: white; padding: 10px; width: 100px; border: none; border-radius: 4px; cursor: pointer;"
+
+    margin_right = "margin-right: 5px;"
+    margin_left = "margin-left: 5px;"
+
+    socket =
+      assign(socket, :container_style, container_style)
+      |> assign(:table_style, table_style)
+      |> assign(:thead_style, thead_style)
+      |> assign(:th_style, th_style)
+      |> assign(:td_style, td_style)
+      |> assign(:button_style, button_style)
+      |> assign(:margin_right, margin_right)
+      |> assign(:margin_left, margin_left)
   end
 end
