@@ -15,6 +15,15 @@ defmodule ElixirFizzBuzzWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api", ElixirFizzBuzzWeb do
+    pipe_through :api
+    get "/get_values_between", FizzBuzzController, :get_values_between
+    get "/get_homepage_values", FizzBuzzController, :get_homepage_values
+    get "/get_favourites", FizzBuzzController, :get_favourites
+    post "/set_favourite", FizzBuzzController, :set_favourite
+    delete "/delete_favourite", FizzBuzzController, :delete_favourite
+  end
+
   scope "/", ElixirFizzBuzzWeb do
     pipe_through :browser
     live "/", FizzBuzzLive
