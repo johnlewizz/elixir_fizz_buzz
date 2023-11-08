@@ -74,7 +74,7 @@ defmodule FizzBuzz.FizzBuzzTest do
   # Will return a list of favourite numbers
   test "request list of favourites" do
     setup_dets_file()
-  # TOD0 return a list of favourites
+    # TOD0 return a list of favourites
     assert true
 
     :dets.close(@test_table_name)
@@ -84,7 +84,7 @@ defmodule FizzBuzz.FizzBuzzTest do
   # Removes a number from the stored favourites
   test "remove number as a favourite" do
     setup_dets_file()
-    #TODO Remove number as a favourite
+    # TODO Remove number as a favourite
     :dets.close(@test_table_name)
     File.rm("./test_favourites")
   end

@@ -1,4 +1,5 @@
 defmodule FizzBuzz.FizzBuzzGenerator do
+  alias FizzBuzz.FavouritesCache
   @spec get_homepage_values() :: {atom(), String.t()}
   def get_homepage_values() do
     result = fizz_buzz(1, 100)
@@ -18,12 +19,24 @@ defmodule FizzBuzz.FizzBuzzGenerator do
 
   @spec fizz_buzz(start_value :: non_neg_integer(), end_value :: non_neg_integer()) :: list()
   def fizz_buzz(start_value, end_value) do
-    Enum.map(start_value..end_value, &fizz_buzz_check(&1))
+    Enum.map(start_value..end_value, &do_fizz_buzz(&1))
+  end
+
+  @spec do_fizz_buzz(number :: non_neg_integer()) :: %{
+          id: non_neg_integer(),
+          value: String.t(),
+          favourited: boolean()
+        }
+  defp do_fizz_buzz(number) do
+    favourited = FavouritesCache.get_favourite(number)
+
+    fizz_buzz_check(number)
+    |> Map.put(:favourited, favourited)
   end
 
   @spec fizz_buzz_check(number :: non_neg_integer()) :: %{
           id: non_neg_integer(),
-          value: String.t() | non_neg_integer()
+          value: String.t()
         }
   defp fizz_buzz_check(number) when rem(number, 3) == 0 and rem(number, 5) == 0 do
     %{id: number, value: "fizzbuzz"}
@@ -37,5 +50,7 @@ defmodule FizzBuzz.FizzBuzzGenerator do
     %{id: number, value: "buzz"}
   end
 
-  defp fizz_buzz_check(number), do: %{id: number, value: number}
+  defp fizz_buzz_check(number) do
+    %{id: number, value: Integer.to_string(number)}
+  end
 end

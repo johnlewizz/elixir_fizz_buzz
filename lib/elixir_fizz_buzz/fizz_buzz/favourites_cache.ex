@@ -12,10 +12,8 @@ defmodule FizzBuzz.FavouritesCache do
   end
 
   def start_link(opts \\ []) do
-    IO.inspect(opts[:table_name] || @table_name)
     Task.start_link(fn ->
       {:ok, _} = :dets.open_file(opts[:table_name] || @table_name, opts)
-      |> IO.inspect()
       Process.hibernate(Function, :identity, [nil])
     end)
   end
@@ -24,8 +22,8 @@ defmodule FizzBuzz.FavouritesCache do
           {atom(), {non_neg_integer(), String.t()}}
   def get_favourite(table_name \\ @table_name, key) do
     case :dets.lookup(table_name, key) do
-      [{^key, value}] -> {:ok, {key, value}}
-      [] -> {:ok, nil}
+      [{^key, value}] -> true
+      [] -> false
     end
   end
 

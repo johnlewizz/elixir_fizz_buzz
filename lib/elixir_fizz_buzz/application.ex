@@ -10,8 +10,8 @@ defmodule ElixirFizzBuzz.Application do
       {Finch, name: ElixirFizzBuzz.Finch},
       ElixirFizzBuzzWeb.Endpoint,
       FizzBuzz.FavouritesCache
-
     ]
+
     opts = [strategy: :one_for_one, name: ElixirFizzBuzz.Supervisor]
     Supervisor.start_link(children, opts)
   end

@@ -1,6 +1,7 @@
 defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
   use ElixirFizzBuzzWeb, :live_view
   alias FizzBuzz.FizzBuzzGenerator
+  alias FizzBuzz.FavouritesCache
 
   def mount(_params, _session, socket) do
     {:ok, fizzbuzz_list} = FizzBuzzGenerator.get_homepage_values()
@@ -27,7 +28,19 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
             <tr>
               <td><%= item.id %></td>
               <td><%= item.value %></td>
-              <td><button phx-click="favourite">♥</button></td>
+              <%= if item.favourited do %>
+                <td>
+                  <button phx-click="unfavourite" phx-value-key={item.id}>
+                    ❤
+                  </button>
+                </td>
+              <% else %>
+                <td>
+                  <button phx-click="favourite" phx-value-key={item.id} phx-value-result={item.value}>
+                    ♥
+                  </button>
+                </td>
+              <% end %>
             </tr>
           <% end %>
         </tbody>
@@ -51,9 +64,21 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     {:noreply, assign(socket, page: page)}
   end
 
-  def handle_event("favourite", _params, socket) do
+  def handle_event("favourite", %{"key" => key, "result" => value}, socket) do
+    int_key = String.to_integer(key)
     # TODO add number to favourite
+    FavouritesCache.add_favourite(int_key, value)
+    |> IO.inspect()
+
     IO.inspect("Favourite")
+    {:noreply, socket}
+  end
+
+  def handle_event("unfavourite", %{"key" => key}, socket) do
+    FavouritesCache.delete_favourite(String.to_integer(key))
+    |> IO.inspect()
+
+    IO.inspect("unfavourite")
     {:noreply, socket}
   end
 
