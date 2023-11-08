@@ -9,53 +9,56 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     page_size = 20
 
     socket =
-      assign(socket, fizzbuzz_list: fizzbuzz_list, page: 1, page_size: page_size)
+      assign(socket,
+        fizzbuzz_list: fizzbuzz_list,
+        page: 1,
+        page_size: page_size,
+        start_range: 1,
+        end_range: 100
+      )
       |> add_styling()
 
     {:ok, socket}
   end
 
   def render(assigns) do
-    container_style = "width: 100%; margin: 0 auto;"
-    table_style = "width: 100%; border-collapse: collapse;"
-    thead_style = "background-color: #f2f2f2;"
-    th_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
-    td_style = "padding: 8px; border-bottom: 1px solid #ddd; text-align: center;"
-
-    button_style =
-      "background-color: #00008B; color: white; padding: 10px; width: 100px; border: none; border-radius: 4px; cursor: pointer;"
-
-    margin_right = "margin-right: 5px;"
-    margin_left = "margin-left: 5px;"
-
     ~H"""
-    <div class="container" style={container_style}>
-      <table class="table table-responsive" style={table_style}>
-        <thead style={thead_style}>
+    <div class="container" style={@container_style}>
+      <form phx-submit="set_range" style={@form_style}>
+        <label for="start_range" style={@label_style}>Start Range</label>
+        <input name="start_range" type="number" style={@input_style} />
+
+        <label for="end_range" style={@label_style}>End Range</label>
+        <input name="end_range" type="number" style={@input_style} />
+
+        <button type="submit" style={@button_style}>Submit</button>
+      </form>
+      <table class="table table-responsive" style={@table_style}>
+        <thead style={@thead_style}>
           <tr>
-            <th style={th_style}>Number</th>
-            <th class="d-none d-md-table-cell" style={th_style}>Result</th>
-            <th class="d-none d-md-table-cell" style={th_style}>Favourite</th>
+            <th style={@th_style}>Number</th>
+            <th class="d-none d-md-table-cell" style={@th_style}>Result</th>
+            <th class="d-none d-md-table-cell" style={@th_style}>Favourite</th>
           </tr>
         </thead>
         <tbody>
           <%= for item <- Enum.slice(assigns.fizzbuzz_list, (assigns.page - 1) * assigns.page_size, assigns.page_size) do %>
             <tr>
-              <td style={td_style}><%= item.id %></td>
-              <td style={td_style}><%= item.value %></td>
+              <td style={@td_style}><%= item.id %></td>
+              <td style={@td_style}><%= item.value %></td>
               <%= if item.favourited do %>
-                <td style={td_style}>
-                  <button phx-click="unfavourite" phx-value-key={item.id} style={button_style}>
+                <td style={@td_style}>
+                  <button phx-click="unfavourite" phx-value-key={item.id} style={@button_style}>
                     ❤
                   </button>
                 </td>
               <% else %>
-                <td style={td_style}>
+                <td style={@td_style}>
                   <button
                     phx-click="favourite"
                     phx-value-key={item.id}
                     phx-value-result={item.value}
-                    style={button_style}
+                    style={@button_style}
                   >
                     ♥
                   </button>
@@ -66,9 +69,9 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
         </tbody>
       </table>
       <div>
-        <button phx-click="prev_page" style={button_style <> margin_right}>Previous</button>
+        <button phx-click="prev_page" style={@button_style <> @margin_right}>Previous</button>
         <span>Page <%= assigns.page %></span>
-        <button phx-click="next_page" style={button_style <> margin_left}>Next</button>
+        <button phx-click="next_page" style={@button_style <> @margin_left}>Next</button>
       </div>
     </div>
     """
@@ -87,11 +90,37 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
   def handle_event("favourite", %{"key" => key, "result" => value}, socket) do
     int_key = String.to_integer(key)
     FavouritesCache.add_favourite(int_key, value)
+
+    {:ok, fizzbuzz_list} =
+      FizzBuzzGenerator.get_between_values(socket.assigns.start_range, socket.assigns.end_range)
+
+    socket = assign(socket, fizzbuzz_list: fizzbuzz_list)
+
     {:noreply, socket}
   end
 
   def handle_event("unfavourite", %{"key" => key}, socket) do
     FavouritesCache.delete_favourite(String.to_integer(key))
+
+    {:ok, fizzbuzz_list} =
+      FizzBuzzGenerator.get_between_values(socket.assigns.start_range, socket.assigns.end_range)
+
+    socket = assign(socket, fizzbuzz_list: fizzbuzz_list)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("set_range", %{"start_range" => start_range, "end_range" => end_range}, socket) do
+    # Handle the range values here as needed
+    start_range = String.to_integer(start_range)
+    end_range = String.to_integer(end_range)
+    {:ok, fizzbuzz_list} = FizzBuzzGenerator.get_between_values(start_range, end_range)
+
+    socket =
+      assign(socket, fizzbuzz_list: fizzbuzz_list)
+      |> assign(:start_range, start_range)
+      |> assign(:end_range, end_range)
+
     {:noreply, socket}
   end
 
@@ -109,6 +138,14 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
   end
 
   defp add_styling(socket) do
+    form_style =
+      "display: inline; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 4px;"
+
+    label_style = "display: inline; margin-right: 10px; margin-bottom: 10px;"
+
+    input_style =
+      "display: inline-block; width: 150px; padding: 10px; margin-right: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 4px;"
+
     container_style = "width: 100%; margin: 0 auto;"
     table_style = "width: 100%; border-collapse: collapse;"
     thead_style = "background-color: #f2f2f2;"
@@ -121,14 +158,16 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     margin_right = "margin-right: 5px;"
     margin_left = "margin-left: 5px;"
 
-    socket =
-      assign(socket, :container_style, container_style)
-      |> assign(:table_style, table_style)
-      |> assign(:thead_style, thead_style)
-      |> assign(:th_style, th_style)
-      |> assign(:td_style, td_style)
-      |> assign(:button_style, button_style)
-      |> assign(:margin_right, margin_right)
-      |> assign(:margin_left, margin_left)
+    assign(socket, :container_style, container_style)
+    |> assign(:table_style, table_style)
+    |> assign(:thead_style, thead_style)
+    |> assign(:th_style, th_style)
+    |> assign(:td_style, td_style)
+    |> assign(:button_style, button_style)
+    |> assign(:margin_right, margin_right)
+    |> assign(:margin_left, margin_left)
+    |> assign(:form_style, form_style)
+    |> assign(:label_style, label_style)
+    |> assign(:input_style, input_style)
   end
 end
