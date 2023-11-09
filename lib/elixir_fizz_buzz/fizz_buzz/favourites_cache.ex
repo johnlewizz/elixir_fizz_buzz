@@ -1,39 +1,46 @@
 defmodule FizzBuzz.FavouritesCache do
+  use GenServer
   @table_name :favourites
 
-  def child_spec(opts) do
-    %{
-      id: __MODULE__,
-      start: {__MODULE__, :start_link, [opts]},
-      type: :worker,
-      restart: :permanent,
-      shutdown: 500
-    }
-  end
-
   def start_link(opts \\ []) do
-    Task.start_link(fn ->
-      {:ok, _} = :dets.open_file(opts[:table_name] || @table_name, opts)
-      Process.hibernate(Function, :identity, [nil])
-    end)
+    GenServer.start_link(__MODULE__, opts, name: opts[:table_name] || @table_name)
   end
 
-  @spec get_favourite(table_name :: atom(), key :: non_neg_integer()) ::
-          {atom(), {non_neg_integer(), String.t()}}
+  def init(opts) do
+    table_name = opts[:table_name] || @table_name
+    {:ok, _} = :dets.open_file(table_name, [])
+    {:ok, %{table_name: table_name}}
+  end
+
+  @spec get_favourite(atom(), non_neg_integer()) :: boolean()
   def get_favourite(table_name \\ @table_name, key) do
-    case :dets.lookup(table_name, key) do
-      [{^key, value}] -> true
-      [] -> false
+    GenServer.call(table_name, {:get_favourite, table_name, key})
+  end
+
+  @spec delete_favourite(atom(), non_neg_integer()) :: :ok
+  def delete_favourite(table_name \\ @table_name, key) do
+    GenServer.call(table_name, {:delete_favourite, table_name, key})
+  end
+
+  @spec add_favourite(atom(), non_neg_integer(), String.t()) :: :ok
+  def add_favourite(table_name \\ @table_name, key, value) do
+    GenServer.call(table_name, {:add_favourite, table_name, key, value})
+  end
+
+  def handle_call({:get_favourite, table_name, key}, _from, state) do
+    case :dets.lookup(state.table_name, key) do
+      [{^key, _value}] -> {:reply, true, state}
+      [] -> {:reply, false, state}
     end
   end
 
-  @spec delete_favourite(table_name :: atom(), key :: non_neg_integer()) :: atom()
-  def delete_favourite(table_name \\ @table_name, key) do
-    :dets.delete(table_name, key)
+  def handle_call({:delete_favourite, table_name, key}, _from, state) do
+    :dets.delete(state.table_name, key)
+    {:reply, :ok, state}
   end
 
-  @spec add_favourite(table_name :: atom(), key :: non_neg_integer()) :: atom()
-  def add_favourite(table_name \\ @table_name, key, value) do
-    :dets.insert(table_name, {key, value})
+  def handle_call({:add_favourite, table_name, key, value}, _from, state) do
+    :dets.insert(state.table_name, {key, value})
+    {:reply, :ok, state}
   end
 end

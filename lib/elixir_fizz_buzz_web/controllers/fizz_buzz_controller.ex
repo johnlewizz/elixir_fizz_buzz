@@ -18,17 +18,11 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzController do
     json(conn, data)
   end
 
-  # TODO write :dets request to get all favourites
-  def get_favourites(conn, _params) do
-    data = %{message: ""}
-    json(conn, data)
-  end
-
   # TODO handle failure to add favourite
   def set_favourite(conn, %{"number" => number, "value" => value}) do
     String.to_integer(number)
     |> FavouritesCache.add_favourite(value)
-
+    |> IO.inspect()
     data = %{message: "ok"}
     json(conn, data)
   end
@@ -37,7 +31,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzController do
   def delete_favourite(conn, %{"number" => number}) do
     String.to_integer(number)
     |> FavouritesCache.delete_favourite()
-
+    |> IO.inspect()
     data = %{message: "ok"}
     json(conn, data)
   end

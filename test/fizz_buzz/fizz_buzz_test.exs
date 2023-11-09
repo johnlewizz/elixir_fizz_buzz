@@ -1,97 +1,53 @@
-defmodule FizzBuzz.FizzBuzzTest do
-  use ExUnit.Case
-  alias FizzBuzz.Favourite
-  alias FizzBuzz.FavouritesCache
+defmodule FizzBuzz.FizzBuzzGeneratorTest do
+  use ExUnit.Case, async: true
+
   alias FizzBuzz.FizzBuzzGenerator
-  @test_table_name :test_favourites
+  alias FizzBuzz.FavouritesCache
 
-  # Test generates values 1-100 using fizzbuzz
-  test "generate home page values" do
-    # TODO validate return values
-    result =
-      FizzBuzzGenerator.get_homepage_values()
-      |> case do
-        {:ok, values} ->
-          true
+  @table_name :favourites_test3
 
-        _ ->
-          false
-      end
+  setup do
+    # Start the FavouritesCache with the test table name
+    FavouritesCache.start_link(table_name: @table_name)
 
-    assert result
+    # Make sure the test table is empty
+    :dets.delete_all_objects(@table_name)
+
+    :ok
   end
 
-  # Will test different inputs within the expected range
-  test "generate range of values" do
-    input_values = [
-      {101, 200},
-      {201, 300},
-      {1001, 2000},
-      {99_999_999_900, 100_000_000_000},
-      {99_999_900_000, 100_000_000_000}
-    ]
-
-    Enum.each(input_values, fn {start_value, end_value} ->
-      result =
-        FizzBuzzGenerator.get_between_values(start_value, end_value)
-        |> case do
-          {:ok, values} ->
-            true
-
-          _ ->
-            false
-        end
-
-      assert result
-    end)
+  test "get_homepage_values/0 returns the first 100 fizzbuzz values" do
+    {:ok, result} = FizzBuzzGenerator.get_homepage_values()
+    assert length(result) == 100
   end
 
-  test "enter invalid range of values" do
-    result =
-      FizzBuzzGenerator.get_between_values(500, 400)
-      |> case do
-        {:error, message} ->
-          IO.inspect(message)
-          true
-
-        _ ->
-          false
-      end
-
-    assert result
+  test "get_between_values/2 returns an error if start value is greater than end value" do
+    assert FizzBuzzGenerator.get_between_values(5, 1) ==
+             {:error, "Start value greater than end value"}
   end
 
-  test "set number as favourite" do
-    setup_dets_file()
+  test "get_between_values/2 returns fizzbuzz values between start and end values" do
+    {:ok, result} = FizzBuzzGenerator.get_between_values(1, 5)
+    assert length(result) == 5
 
-    # TOD0 set a new number as a favourite
-    assert true
+    {:ok, result} = FizzBuzzGenerator.get_between_values(1, 10000)
+    assert length(result) == 10_000
 
-    :dets.close(@test_table_name)
-    File.rm("./test_favourites")
+    {:ok, result} = FizzBuzzGenerator.get_between_values(99_999_900_001, 100_000_000_000)
+    assert length(result) == 100_000
   end
 
-  # Will return a list of favourite numbers
-  test "request list of favourites" do
-    setup_dets_file()
-    # TOD0 return a list of favourites
-    assert true
-
-    :dets.close(@test_table_name)
-    File.rm("./test_favourites")
+  test "do_fizz_buzz/1 returns the correct fizzbuzz value for a number" do
+    assert FizzBuzzGenerator.fizz_buzz_check(3) == %{id: 3, value: "fizz"}
+    assert FizzBuzzGenerator.fizz_buzz_check(5) == %{id: 5, value: "buzz"}
+    assert FizzBuzzGenerator.fizz_buzz_check(15) == %{id: 15, value: "fizzbuzz"}
+    assert FizzBuzzGenerator.fizz_buzz_check(7) == %{id: 7, value: "7"}
   end
 
-  # Removes a number from the stored favourites
-  test "remove number as a favourite" do
-    setup_dets_file()
-    # TODO Remove number as a favourite
-    :dets.close(@test_table_name)
-    File.rm("./test_favourites")
-  end
-
-  defp setup_dets_file do
-    {:ok, file} = :dets.open_file(@test_table_name, [])
-    :ok = :dets.insert(file, [{1, "1"}, {2, "2"}, {3, "fizz"}])
-    {:ok, file}
+  test "do_fizz_buzz/1 handles large numbers correctly" do
+    assert FizzBuzzGenerator.fizz_buzz_check(1_000_000) == %{id: 1_000_000, value: "buzz"}
+    assert FizzBuzzGenerator.fizz_buzz_check(3_000_000) == %{id: 3_000_000, value: "fizzbuzz"}
+    assert FizzBuzzGenerator.fizz_buzz_check(5_000_000) == %{id: 5_000_000, value: "buzz"}
+    assert FizzBuzzGenerator.fizz_buzz_check(15_000_000) == %{id: 15_000_000, value: "fizzbuzz"}
   end
 end

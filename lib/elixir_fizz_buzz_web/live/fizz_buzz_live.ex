@@ -31,6 +31,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     <head>
       <link rel="stylesheet" type="text/css" href="/css/fizzbuzz.css" />
     </head>
+
     <div class="container container-style">
       <%= live_component(FizzBuzzFormComponent, Map.put(assigns, :id, "fizz_buzz_form")) %>
       <div class="container container-inner">
@@ -92,7 +93,6 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
         start_range: start_range,
         end_range: end_range,
         page: 1,
-        total_pages: total_pages,
         page_size: page_size,
         total_pages: total_pages(fizzbuzz_list, page_size)
       })
@@ -100,7 +100,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     {:noreply, socket}
   end
 
-  defp total_pages(fizzbuzz_list, page_size) do
+  def total_pages(fizzbuzz_list, page_size) do
     list_count = Enum.count(fizzbuzz_list)
     pages = div(list_count, page_size)
 

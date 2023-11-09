@@ -7,7 +7,9 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzTableComponent do
       <thead class="thead-style">
         <tr>
           <th class="th-style">Number</th>
+
           <th class="th-style d-none d-md-table-cell">Result</th>
+
           <th class="th-style d-none d-md-table-cell">Favourite</th>
         </tr>
       </thead>
@@ -16,6 +18,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzTableComponent do
         <%= for item <- Enum.slice(assigns.fizzbuzz_list, (assigns.page - 1) * assigns.page_size, assigns.page_size) do %>
           <tr>
             <td class="td-style"><%= item.id %></td>
+
             <td class="td-style"><%= item.value %></td>
 
             <%= if item.favourited do %>

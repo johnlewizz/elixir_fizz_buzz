@@ -28,6 +28,8 @@ elixir_fizz_buzz-*.tar
 #Ignore local :dets files
 /favourites
 /favourites_test
+/favourites_test2
+/favourites_test3
 
 # Ignore assets that are produced by build tools.
 /priv/static/assets/
