@@ -14,14 +14,14 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     page_size = 100
 
     socket =
-      assign(socket,
+      assign(socket, %{
         fizzbuzz_list: fizzbuzz_list,
         page: 1,
         page_size: page_size,
         start_range: 1,
         end_range: 100,
         total_pages: total_pages(fizzbuzz_list, page_size)
-      )
+      })
 
     {:ok, socket}
   end
@@ -29,7 +29,7 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
   def render(assigns) do
     ~H"""
     <head>
-      <link rel="stylesheet" type="text/css" href="fizzbuzz.css" />
+      <link rel="stylesheet" type="text/css" href="/css/fizzbuzz.css" />
     </head>
     <div class="container container-style">
       <%= live_component(FizzBuzzFormComponent, Map.put(assigns, :id, "fizz_buzz_form")) %>
@@ -64,7 +64,8 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
   end
 
   def handle_event("unfavourite", %{"key" => key}, socket) do
-    FavouritesCache.delete_favourite(String.to_integer(key))
+    int_key = String.to_integer(key)
+    FavouritesCache.delete_favourite(int_key)
 
     {:ok, fizzbuzz_list} =
       FizzBuzzGenerator.get_between_values(socket.assigns.start_range, socket.assigns.end_range)
@@ -74,19 +75,27 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzLive do
     {:noreply, socket}
   end
 
-  def handle_event("set_range", %{"start_range" => start_range, "end_range" => end_range}, socket) do
-    # Handle the range values here as needed
+  def handle_event(
+        "set_range",
+        %{"start_range" => start_range, "end_range" => end_range, "page_size" => page_size},
+        socket
+      ) do
     start_range = String.to_integer(start_range)
     end_range = String.to_integer(end_range)
+    page_size = String.to_integer(page_size)
     {:ok, fizzbuzz_list} = FizzBuzzGenerator.get_between_values(start_range, end_range)
     total_pages = total_pages(fizzbuzz_list, socket.assigns.page_size)
 
     socket =
-      assign(socket, fizzbuzz_list: fizzbuzz_list)
-      |> assign(:start_range, start_range)
-      |> assign(:end_range, end_range)
-      |> assign(:page, 1)
-      |> assign(:total_pages, total_pages)
+      assign(socket, %{
+        fizzbuzz_list: fizzbuzz_list,
+        start_range: start_range,
+        end_range: end_range,
+        page: 1,
+        total_pages: total_pages,
+        page_size: page_size,
+        total_pages: total_pages(fizzbuzz_list, page_size)
+      })
 
     {:noreply, socket}
   end

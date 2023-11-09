@@ -13,6 +13,11 @@
     margin-right: 10px;
     margin-bottom: 10px;
   }
+
+  .container-inner {
+    overflow-y: auto;
+    height: 70vh;
+  }
   
   .input-style {
     flex: 1;
@@ -60,6 +65,15 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+  .select-style {
+  width: 100px;
+  padding: 10px;
+  margin-right: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
   
   .margin-right {
     margin-right: 5px;
