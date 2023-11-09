@@ -9,6 +9,10 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzController do
     end_range = String.to_integer(end_range)
     {:ok, fizzbuzz_list} = FizzBuzzGenerator.get_between_values(start_range, end_range)
     data = encode!(fizzbuzz_list)
+
+    Application.get_env()
+    |> IO.inxpect()
+
     json(conn, data)
   end
 
@@ -18,20 +22,14 @@ defmodule ElixirFizzBuzzWeb.FizzBuzzController do
     json(conn, data)
   end
 
-  # TODO handle failure to add favourite
   def set_favourite(conn, %{"number" => number, "value" => value}) do
-    String.to_integer(number)
-    |> FavouritesCache.add_favourite(value)
-    |> IO.inspect()
+    FavouritesCache.add_favourite(number, value)
     data = %{message: "ok"}
     json(conn, data)
   end
 
-  # TODO handle failure to delete favourite
   def delete_favourite(conn, %{"number" => number}) do
-    String.to_integer(number)
-    |> FavouritesCache.delete_favourite()
-    |> IO.inspect()
+    FavouritesCache.delete_favourite(number)
     data = %{message: "ok"}
     json(conn, data)
   end
