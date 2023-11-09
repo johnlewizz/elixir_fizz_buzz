@@ -22,6 +22,7 @@ defmodule FizzBuzz.FizzBuzzGenerator do
     Enum.map(start_value..end_value, &do_fizz_buzz(&1))
   end
 
+  # TODO consider having a ETS cache which periodically saves to :dets for faster lookup performance
   @spec do_fizz_buzz(number :: non_neg_integer()) :: %{
           id: non_neg_integer(),
           value: String.t(),
