@@ -1,18 +1,18 @@
 This is a quick test application generated to allow users to view fizzbuzz values with the range they set.
 
-# Step 1: Clone the Git repository to your local machine
+Step 1: Clone the Git repository to your local machine
 git clone https://github.com/your-username/your-repository.git
 
-# Step 2: Change into the project directory
+Step 2: Change into the project directory
 cd your-repository
 
-# Step 3: Install the project's dependencies
+Step 3: Install the project's dependencies
 mix deps.get
 
-# Step 4: Start the Phoenix application
+Step 4: Start the Phoenix application
 mix phx.server
 
-# Step 5: Open your browser and navigate to the application's URL (http://127.0.0.1:4000)
+Step 5: Open your browser and navigate to the application's URL (http://127.0.0.1:4000)
 
 ![image](https://github.com/johnlewizz/elixir_fizz_buzz/assets/28037155/3ea9f100-8eb7-4a10-8003-58425f863b68)
 
